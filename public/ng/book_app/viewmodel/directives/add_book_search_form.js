@@ -1,3 +1,22 @@
+angular.module('addBookSearchForm', [])
+    .directive('aAddBookSearchForm', function() {
+        return {
+            restrict: 'EA',
+            scope: {
+                books: '='
+            },
+            templateUrl: '/ng/book_app/views/partials/add_book_search_form.html',
+            replace: true,
+            controller: 'AddBookSearchFormController',
+            controllerAs: 'controller',
+            bindToController: true
+        };
+    })
+    .controller('AddBookSearchFormController', function() {
+        this.search = {};
+
+    });
+
 angular.module('books', [])
     .directive('booksList', function() {
         return {
@@ -16,23 +35,4 @@ angular.module('books', [])
             {title: 'Sherlock Holmes', author: 'Arthur Conan Doyle', isbn: '993821'},
             {title: 'Rin Tin Tin', author: 'Lizzie Alford', isbn: '18948750'},
         ];
-    });
-
-
-angular.module('addBookSearchForm', [])
-    .directive('aAddBookSearchForm', function() {
-        return {
-            restrict: 'EA',
-            scope: {
-                books: '='
-            },
-            templateUrl: '/ng/book_app/views/partials/add_book_search_form.html',
-            replace: true,
-            controller: 'AddBookSearchFormController',
-            controllerAs: 'controller',
-            bindToController: true
-        };
-    })
-    .controller('AddBookSearchFormController', function() {
-
     });
