@@ -1,0 +1,20 @@
+<form>
+    <fieldset>
+        <label>
+            <h1>Add Book To Reading List</h1>
+            <p>Search by:</p>
+            <input type="radio" name="searchBy" value="isbn" ng-model="controller.searchType">ISBN
+            <input type="radio" name="searchBy" value="title" ng-model="controller.searchType">Title
+            <input type="radio" name="searchBy" value="author" ng-model="controller.searchType">Author
+            <br>
+            <input type="text" ng-model="controller.searchParams">
+
+            <div>
+                <h2>Preview</h2>
+                Search By: {{controller.searchType}}<br>
+                Search Params {{controller.searchParams}}
+            </div>
+        </label>
+        <button ng-click="controller.save()">Search</button>
+    </fieldset>
+</form>

@@ -1,0 +1,9 @@
+<section>
+    <a-add-book-search-form books='controller.books'></a-add-book-search-form>
+    <h2>To Read:</h2>
+    <ul>
+        <li ng-repeat="book in controller.books">
+            {{book.title}} || {{book.author}} || {{book.isbn}}
+        </li>
+    </ul>
+</section>
