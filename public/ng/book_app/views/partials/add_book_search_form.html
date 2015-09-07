@@ -3,18 +3,15 @@
         <label>
             <h1>Add Book To Reading List</h1>
             <p>Search by:</p>
-            <input type="radio" name="searchBy" value="isbn" ng-model="controller.searchType">ISBN
-            <input type="radio" name="searchBy" value="title" ng-model="controller.searchType">Title
-            <input type="radio" name="searchBy" value="author" ng-model="controller.searchType">Author
+            <input type="radio" ng-model="controller.newSearch.type" value="isbn">ISBN
+            <input type="radio" ng-model="controller.newSearch.type" value="title">Title
+            <input type="radio" ng-model="controller.newSearch.type" value="author">Author
             <br>
-            <input type="text" ng-model="controller.searchParams">
-
-            <div>
-                <h2>Preview</h2>
-                Search By: {{controller.searchType}}<br>
-                Search Params {{controller.searchParams}}
-            </div>
+            <input type="text" ng-model="controller.newSearch.params">
+            <br>
+            <p>type: {{controller.newSearch.type}} || params: {{controller.newSearch.params}}</p>
         </label>
-        <button ng-click="controller.save()">Search</button>
+        <button ng-click="controller.fetch()">Search</button>
+        <button ng-click="controller.cancel()">Cancel</button>
     </fieldset>
 </form>
