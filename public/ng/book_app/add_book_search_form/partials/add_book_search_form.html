@@ -1,0 +1,17 @@
+<form>
+    <fieldset>
+        <label>
+            <h1>Add Book To Reading List</h1>
+            <p>Search by:</p>
+            <input type="radio" ng-model="controller.newSearch.type" value="isbn">ISBN
+            <input type="radio" ng-model="controller.newSearch.type" value="title">Title
+            <input type="radio" ng-model="controller.newSearch.type" value="author">Author
+            <br>
+            <input type="text" ng-model="controller.newSearch.params">
+            <br>
+            <p>type: {{controller.newSearch.type}} || params: {{controller.newSearch.params}}</p>
+        </label>
+        <button ng-click="controller.fetch()">Search</button>
+        <button ng-click="controller.cancel()">Cancel</button>
+    </fieldset>
+</form>
