@@ -9,27 +9,12 @@ angular.module('bookSearch', [])
             controllerAs: 'controller',
         };
     })
-    /*.directive('addBookSelector', function() {
-            return {
-                restrict: 'E',
-                scope: {
-                    search: '='
-                },
-                replace: true,
-                templateUrl: '/ng/book_app/views/partials/add_book_selector.html',
-                controller: 'AddBookSelectorController',
-                controllerAs: 'controller',
-                bindToController: true
-            };
-    })*/
-
     .factory('GetBook', function($resource) {
         var url = 'https://openlibrary.org/api/books';
         return $resource(url, {callback: 'JSON_CALLBACK'}, {
             getBook: {method: 'JSONP'}
         });
     })
-
     .controller('AddBookSearchFormController', function($http, GetBook) {
 
         this.search = {};
@@ -105,23 +90,3 @@ angular.module('bookSearch', [])
         }
 
     });
-
-/*angular.module('books', [])
-    .directive('booksList', function() {
-        return {
-            restrict: 'EA',
-            scope: {},
-            templateUrl: '/ng/book_app/views/partials/book_list.html',
-            replace: true,
-            controller: 'BookController',
-            controllerAs: 'controller'
-        };
-    })
-    .controller('BookController', function() {
-        this.books = [
-            {title: 'The Jungle Book', author: 'Rudyard Kipling', isbn: '123456'},
-            {title: 'The Desert Book', author: 'Kudyard Ripling', isbn: '666666'},
-            {title: 'Sherlock Holmes', author: 'Arthur Conan Doyle', isbn: '993821'},
-            {title: 'Rin Tin Tin', author: 'Lizzie Alford', isbn: '18948750'},
-        ];
-    });*/
