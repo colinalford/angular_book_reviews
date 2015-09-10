@@ -46,100 +46,48 @@ angular.module('bookSearch', [])
                     bookInfo[i]['title'] = response.docs[i]['title_suggest'];
                     bookInfo[i]['author'] = response.docs[i]['author_name'];
                     bookInfo[i]['year'] = response.docs[i]['first_publish_year'];
-                    bookInfo[i]['lccn'] = response.docs[i]['lccn'];
+                    if (response.docs[i]['lccn'] === undefined) {
+                        bookInfo[i]['lccn'] = [];
+                    } else {
+                        bookInfo[i]['lccn'] = response.docs[i]['lccn'];
+                    }
+
                 }
                 for (i in bookInfo) {
-                    var container = document.createElement('div');
-                    container.className = 'cover-preview';
-                    preview.appendChild(container);
 
-                    var len = bookInfo[i]['lccn'].length;
-                    var j = 0;
+                    var lccns = bookInfo[i]['lccn'];
 
-                    // Add image. If image 404s, use next lccn. If all 404, use replacement image
-                    for (j in bookInfo[i]['lccn']) {
-                        var img = new Image(280, 200);
-                        img.src = "http://covers.openlibrary.org/b/lccn/"+bookInfo[i]['lccn'][j]+"-M.jpg?default=false";
-                        img.onerror = function() {
-                            this.parentNode.removeChild(this);
-                        };
+                    function addImage(index, arr) {
+                        if (index >= arr.length) {
+                            var container = document.createElement('div');
+                            container.className = 'cover-preview';
+                            preview.appendChild(container);
+                            var img = new Image(280, 200);
+                            img.src = 'assets/blank_cover.jpg';
+                            container.appendChild(img);
+                        } else {
+                            var container = document.createElement('div');
+                            container.className = 'cover-preview';
+                            preview.appendChild(container);
+                            var img = new Image(280, 200);
+                            img.onerror = function() {
+                                this.parentNode.removeChild(this);
+                                addImage(index+1, arr);
+                            }
+                            img.src = "http://covers.openlibrary.org/b/lccn/"+arr[index]+"-M.jpg?default=false"
+                            container.width = img.width;
+                            container.appendChild(img);
 
-                        container.appendChild(img);
+                        }
 
                     }
+
+                    addImage(0, lccns);
 
                 }
             });
         };
 
-            /*if (type === 'isbn') {
-                var data = GetBook.getBook({bibkeys:'ISBN:'+params});
-                data.$promise.then(function(res) {
-                    var info = JSON.stringify(res);
-                    if(info === '{}') {
-                        alert('No book found');
-                    } else {
-                        this.book = res['ISBN:'+params];
-                        console.log(this.book);
-
-
-                    }
-                });
-            }
-                $http.get('https://openlibrary.org/search.json?'+type+'='+params, {headers: {'Content-Type': 'application/json'}})
-                .success(function(response) {
-                    var bookInfo = {};
-                    bookInfo['lccn'] = [];
-                    for (i in response.docs) {
-                        bookInfo['title'] = response.docs[i]['title_suggest'];
-                        bookInfo['author'] = response.docs[i]['author_name'];
-                        bookInfo['year'] = response.docs[i]['first_published_year'];
-                        bookInfo['lccn'].push(response.docs[i]['lccn']);
-                    }
-                    console.log(bookInfo.toSource());
-                });
-
-                    function(response) {
-                    //console.log(JSON.stringify(response));
-                    var keys = [];
-                    for (i in response.docs) {
-                        keys[i] = [];
-                        keys[i].push(response.docs[i]["title_suggest"]);
-                        keys[i].push(response.docs[i]["lccn"]);
-                    }
-                    for (i in keys) {
-                        if(keys[i][1] === undefined) {
-                            var title = document.createElement('span');
-                            title.innerHTML = keys[i][0].slice(0, 120)+'. . .';
-                            preview.appendChild(title);
-                        } else if (keys[i][1].length > 1) {
-                            for (j in keys[i][1]) {
-                                var imgHeight;
-                                var imgWidth;
-
-                                var img = new Image();
-                                img.src = "http://covers.openlibrary.org/b/lccn/"+keys[i][1][j]+"-M.jpg";
-                                preview.appendChild(img);
-                                if (img.width <= 1) {
-                                    preview.removeChild(img);
-                                    var span = document.createElement('span');
-                                    span.innerHTML = keys[i][0];
-                                    span.style.width = '280px';
-                                    span.style.height = '280px';
-                                    preview.appendChild(span);
-                                }
-                            }
-
-                        } else {
-                            var img = document.createElement('img');
-                            img.src = "http://covers.openlibrary.org/b/lccn/"+keys[i][1]+"-M.jpg";
-                            preview.appendChild(img);
-                        }
-
-                    }
-                } );
-            }
-        };*/
 
         this.cancel = function(){
             preview.innerHTML = '';
