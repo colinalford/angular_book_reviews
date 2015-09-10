@@ -25,12 +25,54 @@ angular.module('bookSearch', [])
 
         var preview = document.getElementById("preview");
 
+        function addContainer() {
+            var container = document.createElement('div');
+            container.className = 'cover-preview';
+            preview.appendChild(container);
+        }
+
+
+
         this.fetch = function() {
             preview.innerHTML = '';
             var type = this.newSearch.type;
             var params = this.newSearch.params;
 
-            if (type === 'isbn') {
+            $http.get('https://openlibrary.org/search.json?'+type+'='+params, {headers: {'Content-Type': 'application/json'}})
+            .success(function(response) {
+                var bookInfo = [];
+                for (i in response.docs) {
+                    bookInfo[i] = {};
+                    bookInfo[i]['title'] = response.docs[i]['title_suggest'];
+                    bookInfo[i]['author'] = response.docs[i]['author_name'];
+                    bookInfo[i]['year'] = response.docs[i]['first_publish_year'];
+                    bookInfo[i]['lccn'] = response.docs[i]['lccn'];
+                }
+                for (i in bookInfo) {
+                    var container = document.createElement('div');
+                    container.className = 'cover-preview';
+                    preview.appendChild(container);
+
+                    var len = bookInfo[i]['lccn'].length;
+                    var j = 0;
+
+                    // Add image. If image 404s, use next lccn. If all 404, use replacement image
+                    for (j in bookInfo[i]['lccn']) {
+                        var img = new Image(280, 200);
+                        img.src = "http://covers.openlibrary.org/b/lccn/"+bookInfo[i]['lccn'][j]+"-M.jpg?default=false";
+                        img.onerror = function() {
+                            this.parentNode.removeChild(this);
+                        };
+
+                        container.appendChild(img);
+
+                    }
+
+                }
+            });
+        };
+
+            /*if (type === 'isbn') {
                 var data = GetBook.getBook({bibkeys:'ISBN:'+params});
                 data.$promise.then(function(res) {
                     var info = JSON.stringify(res);
@@ -38,12 +80,26 @@ angular.module('bookSearch', [])
                         alert('No book found');
                     } else {
                         this.book = res['ISBN:'+params];
-                        console.log(info);
+                        console.log(this.book);
+
+
                     }
                 });
-            } else {
+            }
                 $http.get('https://openlibrary.org/search.json?'+type+'='+params, {headers: {'Content-Type': 'application/json'}})
                 .success(function(response) {
+                    var bookInfo = {};
+                    bookInfo['lccn'] = [];
+                    for (i in response.docs) {
+                        bookInfo['title'] = response.docs[i]['title_suggest'];
+                        bookInfo['author'] = response.docs[i]['author_name'];
+                        bookInfo['year'] = response.docs[i]['first_published_year'];
+                        bookInfo['lccn'].push(response.docs[i]['lccn']);
+                    }
+                    console.log(bookInfo.toSource());
+                });
+
+                    function(response) {
                     //console.log(JSON.stringify(response));
                     var keys = [];
                     for (i in response.docs) {
@@ -81,9 +137,9 @@ angular.module('bookSearch', [])
                         }
 
                     }
-                });
+                } );
             }
-        };
+        };*/
 
         this.cancel = function(){
             preview.innerHTML = '';
