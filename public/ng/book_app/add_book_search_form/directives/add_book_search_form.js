@@ -4,14 +4,35 @@
 // POST route. This information will be displayed by the to_read_list directive.
 
 angular.module('bookSearch', [])
-    .directive('addBookSearchForm', function() {
+
+    .directive('addSelectedBook', function() {
         return {
             restrict: 'EA',
             scope: {},
+            templateUrl: '/ng/book_app/add_book_search_form/partials/add_selected_book.html',
+            replace: true,
+            controller: 'AddSelectedBookController',
+            controllerAs: 'controller'
+        }
+    })
+    .controller('AddSelectedBookController', function(){
+        this.bookParams = {
+            author: '',
+            title: '',
+            year: ''
+        };
+    })
+    .directive('addBookSearchForm', function() {
+        return {
+            restrict: 'EA',
+            scope: {
+                bookParams: '='
+            },
             templateUrl: '/ng/book_app/add_book_search_form/partials/add_book_search_form.html',
             replace: true,
             controller: 'AddBookSearchFormController',
             controllerAs: 'controller',
+            bindToController: true
         };
     })
     .factory('GetBook', function($resource) {
@@ -22,8 +43,6 @@ angular.module('bookSearch', [])
     })
     .controller('AddBookSearchFormController', function($http, GetBook) {
 
-        this.search = {};
-
         this.newSearch = {
             type: 'author',
             params: 'stephen king'
@@ -31,9 +50,9 @@ angular.module('bookSearch', [])
 
         var preview = document.getElementById("preview");
 
-
-
         this.fetch = function() {
+
+            preview.innerHTML = '';
             var gif = new Image();
             gif.src = 'assets/ajax-loader.gif';
             preview.appendChild(gif);
@@ -70,6 +89,7 @@ angular.module('bookSearch', [])
 
                         var container = document.createElement('div');
                         container.className = 'cover-preview';
+                        container.setAttribute('ng-click', 'controller.addBookInfo()');
                         if (index >= obj['lccn'].length) {
                             preview.appendChild(container);
                         } else {
@@ -119,9 +139,14 @@ angular.module('bookSearch', [])
         };
 
 
-        this.cancel = function(){
+        this.cancel = function() {
             this.newSearch.params = '';
             preview.innerHTML = '';
-        }
+        };
+
+        this.addBookInfo = function() {
+            console.log('clikkkkkked');
+            this.bookParams.author = 'ballzzzzz';
+        };
 
     });

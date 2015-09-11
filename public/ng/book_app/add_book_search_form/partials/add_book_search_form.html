@@ -1,16 +1,21 @@
-<form>
-    <fieldset>
-        <label>
-            <h1>Add Book To Reading List</h1>
-            <p>Search by:</p>
-            <input type="radio" ng-model="controller.newSearch.type" value="isbn">ISBN
-            <input type="radio" ng-model="controller.newSearch.type" value="title">Title
-            <input type="radio" ng-model="controller.newSearch.type" value="author">Author
-            <br>
-            <input type="text" ng-model="controller.newSearch.params">
-            <br>
-        </label>
-        <button ng-click="controller.fetch()">Search</button>
-        <button ng-click="controller.cancel()">Cancel</button>
-    </fieldset>
-</form>
+
+<div>
+    <form>
+        <fieldset>
+            <label>
+                <h1>Add Book To Reading List</h1>
+                <p>Search by:</p>
+                <input type="radio" ng-model="controller.newSearch.type" value="isbn">ISBN
+                <input type="radio" ng-model="controller.newSearch.type" value="title">Title
+                <input type="radio" ng-model="controller.newSearch.type" value="author">Author
+                <br>
+                <input type="text" ng-model="controller.newSearch.params">
+                <br>
+            </label>
+            <button ng-click="controller.fetch()">Search</button>
+            <button ng-click="controller.cancel()">Cancel</button>
+        </fieldset>
+    </form>
+
+    <div id="preview"></div>    
+</div>
