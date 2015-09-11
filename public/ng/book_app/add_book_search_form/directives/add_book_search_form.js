@@ -1,3 +1,8 @@
+// User can enter book information and search for book to add to read
+// list. Info is pulled from OpenLibrary API. When book is selected, user will
+// verify information, then the data will be posted to the database via API
+// POST route. This information will be displayed by the to_read_list directive.
+
 angular.module('bookSearch', [])
     .directive('addBookSearchForm', function() {
         return {
@@ -20,26 +25,31 @@ angular.module('bookSearch', [])
         this.search = {};
 
         this.newSearch = {
-            type: 'isbn'
+            type: 'author',
+            params: 'stephen king'
         };
 
         var preview = document.getElementById("preview");
 
-        function addContainer() {
-            var container = document.createElement('div');
-            container.className = 'cover-preview';
-            preview.appendChild(container);
-        }
-
 
 
         this.fetch = function() {
-            preview.innerHTML = '';
+            var gif = new Image();
+            gif.src = 'assets/ajax-loader.gif';
+            preview.appendChild(gif);
             var type = this.newSearch.type;
             var params = this.newSearch.params;
 
             $http.get('https://openlibrary.org/search.json?'+type+'='+params, {headers: {'Content-Type': 'application/json'}})
             .success(function(response) {
+                var span = document.createElement('span');
+                preview.innerHTML = '';
+                preview.appendChild(span);
+                if (response.num_found === 0) {
+                    var err = document.createElement('p');
+                    err.innerHTML = 'No results found';
+                    preview.appendChild(err);
+                }
                 var bookInfo = [];
                 for (i in response.docs) {
                     bookInfo[i] = {};
@@ -51,45 +61,66 @@ angular.module('bookSearch', [])
                     } else {
                         bookInfo[i]['lccn'] = response.docs[i]['lccn'];
                     }
-
                 }
                 for (i in bookInfo) {
 
-                    var lccns = bookInfo[i]['lccn'];
+                    var obj = bookInfo[i];
 
-                    function addImage(index, arr) {
-                        if (index >= arr.length) {
-                            var container = document.createElement('div');
-                            container.className = 'cover-preview';
+                    function addImage(index, obj) {
+
+                        var container = document.createElement('div');
+                        container.className = 'cover-preview';
+                        if (index >= obj['lccn'].length) {
                             preview.appendChild(container);
-                            var img = new Image(280, 200);
-                            img.src = 'assets/blank_cover.jpg';
-                            container.appendChild(img);
                         } else {
-                            var container = document.createElement('div');
-                            container.className = 'cover-preview';
-                            preview.appendChild(container);
-                            var img = new Image(280, 200);
-                            img.onerror = function() {
-                                this.parentNode.removeChild(this);
-                                addImage(index+1, arr);
-                            }
-                            img.src = "http://covers.openlibrary.org/b/lccn/"+arr[index]+"-M.jpg?default=false"
-                            container.width = img.width;
-                            container.appendChild(img);
-
+                            preview.insertBefore(container, span);
                         }
 
+                        var img = new Image(190, 280);
+
+                        img.onload = function() {
+                            var title = document.createElement('p');
+                            title.className = 'title';
+                            if (obj['title'].length > 20) {
+                                title.innerHTML = obj['title'].slice(0, 19)+'. . .';
+                            } else {
+                                title.innerHTML = obj['title'];
+                            }
+
+                            var author = document.createElement('p');
+                            author.className = 'author';
+                            if (obj['title'].length > 20) {
+                                author.innerHTML = obj['author'].slice(0, 19)+'. . .';
+                            } else {
+                                author.innerHTML = obj['author'];
+                            }
+                            author.innerHTML = obj['author'];
+
+                            this.parentNode.appendChild(title);
+                            this.parentNode.appendChild(author);
+                        }
+
+                        img.onerror = function() {
+                            this.parentNode.parentNode.removeChild(this.parentNode);
+                            addImage(index+1, obj);
+                        }
+
+                        if (index >= obj['lccn'].length) {
+                            img.src = 'assets/blank_cover.jpg';
+                        } else {
+                            img.src = "http://covers.openlibrary.org/b/lccn/"+obj['lccn'][index]+"-M.jpg?default=false";
+                        }
+
+                        container.appendChild(img);
                     }
-
-                    addImage(0, lccns);
-
+                    addImage(0, obj);
                 }
             });
         };
 
 
         this.cancel = function(){
+            this.newSearch.params = '';
             preview.innerHTML = '';
         }
 
