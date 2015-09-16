@@ -16,11 +16,7 @@ angular.module('bookSearch', [])
         }
     })
     .controller('AddSelectedBookController', function(){
-        this.bookParams = {
-            author: '',
-            title: '',
-            year: ''
-        };
+        this.bookParams = [];
     })
     .directive('addBookSearchForm', function() {
         return {
@@ -31,8 +27,7 @@ angular.module('bookSearch', [])
             templateUrl: '/ng/book_app/add_book_search_form/partials/add_book_search_form.html',
             replace: true,
             controller: 'AddBookSearchFormController',
-            controllerAs: 'controller',
-            bindToController: true
+            controllerAs: 'controller'
         };
     })
     .factory('GetBook', function($resource) {
@@ -41,16 +36,37 @@ angular.module('bookSearch', [])
             getBook: {method: 'JSONP'}
         });
     })
-    .controller('AddBookSearchFormController', function($http, GetBook) {
+    .controller('AddBookSearchFormController', function($http, GetBook, $scope) {
 
-        this.newSearch = {
+        $scope.newSearch = {
             type: 'author',
             params: 'stephen king'
         };
 
-        var preview = document.getElementById("preview");
+
+        $scope.bookInfo = [];
 
         this.fetch = function() {
+            $http.get('https://openlibrary.org/search.json?'+$scope.newSearch.type+'='+$scope.newSearch.params, {headers: {'Content-Type': 'application/json'}})
+            .success(function(response) {
+                for (i in response.docs) {
+                    $scope.bookParams[i] = {};
+                    $scope.bookParams[i]['title'] = response.docs[i]['title_suggest'];
+                    $scope.bookParams[i]['author'] = response.docs[i]['author_name'];
+                    $scope.bookParams[i]['year'] = response.docs[i]['first_publish_year'];
+                    if (response.docs[i]['lccn'] === undefined) {
+                        $scope.bookParams[i]['lccn'] = [];
+                    } else {
+                        $scope.bookParams[i]['lccn'] = response.docs[i]['lccn'];
+                    }
+                }
+            });
+        };
+
+
+
+
+        /*this.fetch = function() {
 
             preview.innerHTML = '';
             var gif = new Image();
@@ -136,10 +152,10 @@ angular.module('bookSearch', [])
                     addImage(0, obj);
                 }
             });
-        };
+        };*/
 
 
-        this.cancel = function() {
+        $scope.cancel = function() {
             this.newSearch.params = '';
             preview.innerHTML = '';
         };

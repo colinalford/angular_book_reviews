@@ -17,5 +17,9 @@
         </fieldset>
     </form>
 
-    <div id="preview"></div>    
+    <div id="preview">
+        <div ng-repeat="i in controller.bookInfo">
+            {{i.title}} || {{i.year}}
+        </div>
+    </div>
 </div>

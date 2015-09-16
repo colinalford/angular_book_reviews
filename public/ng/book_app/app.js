@@ -1,1 +1,1 @@
-angular.module('book_app', ['ngResource','bookSearch']);
+angular.module('book_app', ['ngResource','bookCovers']);
