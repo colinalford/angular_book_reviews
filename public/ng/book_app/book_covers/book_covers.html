@@ -16,11 +16,12 @@
     </form>
 
     <div id="preview">
-        <div class="book-container" ng-repeat="book in bookData">
+        <div class="book-container" ng-repeat="book in bookData" ng-click="">
             <img ng-src="http://covers.openlibrary.org/b/lccn/{{book.lccn[0]}}-M.jpg?default=false" src-fallback="{{book.lccn}}" src-index="0">
             <p>{{book.title_suggest | limitTo: 20}}{{book.title_suggest.length > 20 ? '...' : ''}}</p>
             <p authors>{{book.author_name | limitTo: 20}}{{book.author_name.length > 20 ? '...':''}}</p>
             <p>{{book.first_publish_year}}</p>
+            <add-popup visible="false"></add-popup>
         </div>
         <span></span>
     </div>

@@ -72,6 +72,18 @@ angular.module('bookCovers', [])
             }
         }
     })
+    .directive('addPopup', function() {
+        return {
+            restrict: 'E',
+            templateUrl: '/ng/book_app/book_covers/add-popup.html',
+            replace: true,
+            controller: 'AddPopupController',
+            controllerAs: 'ctrl'
+        }
+    })
+    .controller('AddPopupController', function($scope) {
+        
+    })
     .controller('BookCoversController', function($scope, OpenLibrary) {
 
         this.bookData;
