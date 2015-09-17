@@ -82,12 +82,25 @@ angular.module('bookCovers', [])
         }
     })
     .controller('AddPopupController', function($scope) {
-        
+        this.addToDb = {
+            title: $scope.book.title_suggest,
+            author: $scope.book.author_name,
+            year: $scope.book.first_publish_year,
+            notes: 'Add your notes here!'
+        };
+
+        this.post = function() {
+            alert('Posted to DB!');
+            $scope.isVisible = false;
+        }
+
     })
     .controller('BookCoversController', function($scope, OpenLibrary) {
 
         this.bookData;
         this.status;
+
+        this.isVisible = false;
 
         this.newSearch = {
             type: 'author',
@@ -105,6 +118,10 @@ angular.module('bookCovers', [])
                 .error(function(error) {
                     $scope.status = 'Unable to load data: ' + error.message;
                 });
+        }
+
+        this.clearBooks = function() {
+            $scope.bookData = {};
         }
 
     });
