@@ -24,9 +24,11 @@ angular.module('bookCovers', [])
             compile: function(tElem, tAttrs) {
                 return {
                     pre: function(scope, element, attributes) {
+                        scope.book.img = {};
                         if (attributes.srcFallback === '') {
                             attributes.$set('src', 'blank_cover.jpg');
                         }
+                        scope.book.img = attributes.src;
                     },
                     post: function(scope, element, attributes) {
                         if (attributes.src === 'blank_cover.jpg') {
@@ -34,6 +36,9 @@ angular.module('bookCovers', [])
                             var container = element.parent();
                             prev.append(container);
                         }
+                        element.bind('load', function() {
+                            scope.book.img = attributes.src;
+                        });
                         element.bind('error', function() {
                             var arr = JSON.parse(attributes.srcFallback);
                             var index = JSON.parse(attributes.srcIndex);
@@ -42,9 +47,11 @@ angular.module('bookCovers', [])
                                 var prev = element.parent().parent();
                                 var container = element.parent();
                                 prev.append(container);
+                                scope.book.img = attributes.src;
                             } else {
                                 attributes.$set('src', 'http://covers.openlibrary.org/b/lccn/'+arr[index+1]+'-M.jpg?default=false');
                                 attributes.$set('srcIndex', index+1);
+                                scope.book.img = attributes.src;
                             }
                         });
                     }
@@ -81,19 +88,68 @@ angular.module('bookCovers', [])
             controllerAs: 'ctrl'
         }
     })
-    .controller('AddPopupController', function($scope) {
+    .factory('ToReadApi', function($http) {
+        var urlBase = '/api/toread';
+        var dataFactory = {};
+
+        dataFactory.getList = function() {
+            return $http.get(urlBase);
+        };
+
+        dataFactory.postBook = function(book) {
+            return $http.post(urlBase, book);
+        };
+
+        dataFactory.updateBook = function(book) {
+            return $http.put(urlBase+'/'+book.lccn);
+        };
+
+        dataFactory.deleteBook = function(book) {
+            return $http.delete(urlBase+'/'+book.lccn);
+        };
+
+        return dataFactory;
+    })
+    .factory('ReviewedApi', function($http) {
+        var urlBase = '/api/reviewed';
+        var dataFactory = {};
+
+        dataFactory.getList = function() {
+            return $http.get(urlbase);
+        };
+
+        dataFactory.postBook = function(book) {
+            book.lccn = book.lccn[0];
+            return $http.post(urlbase, book);
+        };
+
+        dataFactory.updateBook = function(book) {
+            return $http.put(urlbase+'/'+book.lccn[0], book);
+        };
+
+        dataFactory.deleteBook = function(book) {
+            return $http.delete(urlbase+'/'+book.lccn[0]);
+        };
+    })
+    .controller('AddPopupController', function($scope, ToReadApi) {
         this.addToDb = {
             title: $scope.book.title_suggest,
             author: $scope.book.author_name,
             year: $scope.book.first_publish_year,
-            notes: 'Add your notes here!'
+            notes: 'Add your notes here!',
         };
 
         this.post = function() {
-            alert('Posted to DB!');
-            $scope.isVisible = false;
+            ToReadApi.postBook($scope.book)
+            .success(function(data){
+                alert('Posted to DB!');
+                $scope.$parent.bookData = {};
+                $scope.isVisible = false;
+            })
+            .error(function(err){
+                alert('Did not post');
+            });
         }
-
     })
     .controller('BookCoversController', function($scope, OpenLibrary) {
 
