@@ -8,6 +8,7 @@ var ToReadSchema = new Schema({
     year_published: Date,
     began_date: Date,
     notes: String,
+    img_url: String
 });
 
 module.exports = mongoose.model('ToRead', ToReadSchema);

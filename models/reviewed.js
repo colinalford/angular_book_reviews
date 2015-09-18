@@ -11,7 +11,8 @@ var ReviewedSchema = new Schema({
     summary: String,
     notes: String,
     rating: Number,
-    review: String
+    review: String,
+    img_url: String
 });
 
 module.exports = mongoose.model('Reviewed', ReviewedSchema);

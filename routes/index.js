@@ -21,7 +21,7 @@ router.get('/api/toread', function(req, res) {
 
 router.post('/api/toread', function(req, res) {
     var toread = new ToRead();
-    toread.lccn = req.body.lccn;
+    toread.lccn = req.body.isbn;
     toread.title = req.body.title;
     toread.author = req.body.author;
     toread.year_published = req.body.year_published;

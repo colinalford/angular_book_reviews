@@ -9,6 +9,50 @@ angular.module('bookCovers', [])
 
         return data;
     })
+    .factory('ToReadApi', function($http) {
+        var urlBase = '/api/toread';
+        var dataFactory = {};
+
+        dataFactory.getList = function() {
+            return $http.get(urlBase);
+        };
+
+        dataFactory.postBook = function(book) {
+            return $http.post(urlBase, book);
+        };
+
+        dataFactory.updateBook = function(book) {
+            return $http.put(urlBase+'/'+book.isbn);
+        };
+
+        dataFactory.deleteBook = function(book) {
+            return $http.delete(urlBase+'/'+book.isbn);
+        };
+
+        return dataFactory;
+    })
+    .factory('ReviewedApi', function($http) {
+        var urlBase = '/api/reviewed';
+        var dataFactory = {};
+
+        dataFactory.getList = function() {
+            return $http.get(urlbase);
+        };
+
+        dataFactory.postBook = function(book) {
+            book.lccn = book.lccn[0];
+            console.log(book.toSource());
+            return $http.post(urlbase, book);
+        };
+
+        dataFactory.updateBook = function(book) {
+            return $http.put(urlbase+'/'+book.lccn[0], book);
+        };
+
+        dataFactory.deleteBook = function(book) {
+            return $http.delete(urlbase+'/'+book.lccn[0]);
+        };
+    })
     .directive('bookCoversDirective', function() {
         return {
             scope: {},
@@ -24,13 +68,9 @@ angular.module('bookCovers', [])
             compile: function(tElem, tAttrs) {
                 return {
                     pre: function(scope, element, attributes) {
-                        scope.book.img = {};
                         if (attributes.srcFallback === '') {
                             attributes.$set('src', 'blank_cover.jpg');
                         }
-                        scope.book.img = attributes.src;
-                    },
-                    post: function(scope, element, attributes) {
                         if (attributes.src === 'blank_cover.jpg') {
                             var prev = element.parent().parent();
                             var container = element.parent();
@@ -47,12 +87,16 @@ angular.module('bookCovers', [])
                                 var prev = element.parent().parent();
                                 var container = element.parent();
                                 prev.append(container);
-                                scope.book.img = attributes.src;
                             } else {
                                 attributes.$set('src', 'http://covers.openlibrary.org/b/lccn/'+arr[index+1]+'-M.jpg?default=false');
                                 attributes.$set('srcIndex', index+1);
-                                scope.book.img = attributes.src;
                             }
+                        });
+                    },
+                    post: function(scope, element, attributes) {
+                        attributes.$observe('src', function(newValue) {
+                            scope.book.img = {}
+                            scope.book.img = newValue;
                         });
                     }
                 }
@@ -79,79 +123,7 @@ angular.module('bookCovers', [])
             }
         }
     })
-    .directive('addPopup', function() {
-        return {
-            restrict: 'E',
-            templateUrl: '/ng/book_app/book_covers/add-popup.html',
-            replace: true,
-            controller: 'AddPopupController',
-            controllerAs: 'ctrl'
-        }
-    })
-    .factory('ToReadApi', function($http) {
-        var urlBase = '/api/toread';
-        var dataFactory = {};
-
-        dataFactory.getList = function() {
-            return $http.get(urlBase);
-        };
-
-        dataFactory.postBook = function(book) {
-            return $http.post(urlBase, book);
-        };
-
-        dataFactory.updateBook = function(book) {
-            return $http.put(urlBase+'/'+book.lccn);
-        };
-
-        dataFactory.deleteBook = function(book) {
-            return $http.delete(urlBase+'/'+book.lccn);
-        };
-
-        return dataFactory;
-    })
-    .factory('ReviewedApi', function($http) {
-        var urlBase = '/api/reviewed';
-        var dataFactory = {};
-
-        dataFactory.getList = function() {
-            return $http.get(urlbase);
-        };
-
-        dataFactory.postBook = function(book) {
-            book.lccn = book.lccn[0];
-            return $http.post(urlbase, book);
-        };
-
-        dataFactory.updateBook = function(book) {
-            return $http.put(urlbase+'/'+book.lccn[0], book);
-        };
-
-        dataFactory.deleteBook = function(book) {
-            return $http.delete(urlbase+'/'+book.lccn[0]);
-        };
-    })
-    .controller('AddPopupController', function($scope, ToReadApi) {
-        this.addToDb = {
-            title: $scope.book.title_suggest,
-            author: $scope.book.author_name,
-            year: $scope.book.first_publish_year,
-            notes: 'Add your notes here!',
-        };
-
-        this.post = function() {
-            ToReadApi.postBook($scope.book)
-            .success(function(data){
-                alert('Posted to DB!');
-                $scope.$parent.bookData = {};
-                $scope.isVisible = false;
-            })
-            .error(function(err){
-                alert('Did not post');
-            });
-        }
-    })
-    .controller('BookCoversController', function($scope, OpenLibrary) {
+    .controller('BookCoversController', function($scope, OpenLibrary, ToReadApi) {
 
         this.bookData;
         this.status;
@@ -180,4 +152,41 @@ angular.module('bookCovers', [])
             $scope.bookData = {};
         }
 
+    })
+    .controller('PopupController', function($scope, ToReadApi) {
+        this.addToDb = {
+            title: $scope.book.title_suggest,
+            author: $scope.book.author_name,
+            year_published: $scope.book.first_publish_year,
+            isbn: $scope.book.isbn[0],
+            img: $scope.book.img,
+            notes: 'Add your notes here!',
+        };
+
+        this.post = function() {
+            this.addToDb.img = $scope.book.img;
+            ToReadApi.postBook(this.addToDb)
+            .success(function(data){
+
+                alert('Posted to DB!');
+                $scope.bookData = {};
+                $scope.isVisible = false;
+            })
+            .error(function(err){
+                alert('Did not post');
+            });
+
+            $scope.bookData = {};
+        }
+
+    })
+    .controller('ToReadListController', function($scope, ToReadApi) {
+        $scope.toReadList = null;
+        $scope.$watch('bookData', function(newValue, oldValue) {
+            ToReadApi.getList().success(function(data){
+                $scope.toReadList = data;
+            }).error(function(err) {
+                console.log('Error: '+err);
+            });
+        })
     });
