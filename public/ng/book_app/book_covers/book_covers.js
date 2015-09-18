@@ -22,7 +22,7 @@ angular.module('bookCovers', [])
         };
 
         dataFactory.updateBook = function(book) {
-            return $http.put(urlBase+'/'+book.isbn);
+            return $http.put(urlBase+'/'+book.isbn, book);
         };
 
         dataFactory.deleteBook = function(book) {
@@ -46,11 +46,11 @@ angular.module('bookCovers', [])
         };
 
         dataFactory.updateBook = function(book) {
-            return $http.put(urlbase+'/'+book.lccn[0], book);
+            return $http.put(urlbase+'/'+book.isbn, book);
         };
 
         dataFactory.deleteBook = function(book) {
-            return $http.delete(urlbase+'/'+book.lccn[0]);
+            return $http.delete(urlbase+'/'+book.isbn);
         };
     })
     .directive('bookCoversDirective', function() {
@@ -78,6 +78,10 @@ angular.module('bookCovers', [])
                         }
                         element.bind('load', function() {
                             scope.book.img = attributes.src;
+                            attributes.$observe('src', function(newValue) {
+                                scope.book.img = {}
+                                scope.book.img = newValue;
+                            });
                         });
                         element.bind('error', function() {
                             var arr = JSON.parse(attributes.srcFallback);
@@ -91,12 +95,6 @@ angular.module('bookCovers', [])
                                 attributes.$set('src', 'http://covers.openlibrary.org/b/lccn/'+arr[index+1]+'-M.jpg?default=false');
                                 attributes.$set('srcIndex', index+1);
                             }
-                        });
-                    },
-                    post: function(scope, element, attributes) {
-                        attributes.$observe('src', function(newValue) {
-                            scope.book.img = {}
-                            scope.book.img = newValue;
                         });
                     }
                 }
@@ -164,19 +162,16 @@ angular.module('bookCovers', [])
         };
 
         this.post = function() {
-            this.addToDb.img = $scope.book.img;
             ToReadApi.postBook(this.addToDb)
             .success(function(data){
-
-                alert('Posted to DB!');
-                $scope.bookData = {};
                 $scope.isVisible = false;
+                $scope.$parent.$parent.bookData = {};
+                alert('Added to Database!');
             })
             .error(function(err){
                 alert('Did not post');
             });
 
-            $scope.bookData = {};
         }
 
     })
