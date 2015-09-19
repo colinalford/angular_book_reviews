@@ -7,7 +7,7 @@ var bodyParser = require('body-parser');
 var mongoose = require('mongoose');
 
 // Database setup
-mongoose.connect('mongodb://localhost/toreadtest');
+mongoose.connect('mongodb://localhost/toreadtest2');
 
 var routes = require('./routes/index');
 var app = express();
