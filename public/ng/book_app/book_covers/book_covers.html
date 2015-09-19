@@ -37,7 +37,7 @@
                             Notes:<input type="text" ng-model="popctrl.addToDb.notes">
                             <br>
                         </label>
-                        <button ng-click="popctrl.post()">Add</button>
+                        <button ng-click="popctrl.post(popctrl.addToDb)">Add</button>
                         <button ng-click="isVisible=false">Cancel</button>
                     </fieldset>
                 </form>
@@ -55,6 +55,15 @@
             <p>{{book.year_published}}</p>
             <p>{{book.author}}</p>
             <p>{{book.lccn}}</p>
+            Read it!<input type="checkbox" ng-model="book.checkboxModel" ng-change="toReadCtrl.addReviewed(book)">{{book.checkboxModel}}
+        </div>
+    </div>
+    <hr>
+    <div id="reviewedlist" ng-controller="ReviewedController as reviewedCtrl">
+        <div class="book-container" ng-repeat="book in reviewedList">
+            <p>{{book.title}}</p>
+            <p>{{book.author}}</p>
+            <p>{{book.year_published}}</p>
         </div>
     </div>
 </div>

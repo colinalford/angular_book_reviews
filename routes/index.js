@@ -21,7 +21,7 @@ router.get('/api/toread', function(req, res) {
 
 router.post('/api/toread', function(req, res) {
     var toread = new ToRead();
-    toread.lccn = req.body.isbn;
+    toread.isbnn = req.body.isbn;
     toread.title = req.body.title;
     toread.author = req.body.author;
     toread.year_published = req.body.year_published;
@@ -37,8 +37,8 @@ router.post('/api/toread', function(req, res) {
     });
 });
 
-router.get('/api/toread/:lccn', function(req, res) {
-    ToRead.findOne({lccn: req.params.lccn}, function(err, data) {
+router.get('/api/toread/:isbn', function(req, res) {
+    ToRead.findOne({isbn: req.params.isbn}, function(err, data) {
         if (err) {
             res.json('Error: '+err);
         } else {
@@ -47,12 +47,12 @@ router.get('/api/toread/:lccn', function(req, res) {
     })
 });
 
-router.put('/api/toread/:lccn', function(req, res) {
-    ToRead.findOne({lccn: req.params.lccn}, function(err, data) {
+router.put('/api/toread/:isbn', function(req, res) {
+    ToRead.findOne({isbn: req.params.isbn}, function(err, data) {
         if (err) {
             res.json('Error: '+err);
         } else {
-            data.lccn = req.body.lccn;
+            data.isbn = req.body.isbn;
             data.title = req.body.title;
             data.author = req.body.author;
             data.year_published = req.body.year_published;
@@ -70,8 +70,8 @@ router.put('/api/toread/:lccn', function(req, res) {
     });
 });
 
-router.delete('/api/toread/:lccn', function(req, res) {
-    ToRead.remove({lccn: req.params.lccn}, function(err) {
+router.delete('/api/toread/:isbn', function(req, res) {
+    ToRead.remove({isbn: req.params.isbn}, function(err) {
         if (err) {
             res.json('Error: '+err);
         } else {
@@ -92,7 +92,7 @@ router.get('/api/reviewed', function(req, res) {
 
 router.post('/api/reviewed', function(req, res) {
     var reviewed = new Reviewed();
-    reviewed.lccn = req.body.lccn;
+    reviewed.isbn = req.body.isbn;
     reviewed.author = req.body.author;
     reviewed.title = req.body.title;
     reviewed.year_published = req.body.year_published;
@@ -112,8 +112,8 @@ router.post('/api/reviewed', function(req, res) {
     });
 });
 
-router.get('/api/reviewed/:lccn', function(req, res) {
-    Reviewed.findOne({lccn: req.params.lccn}, function(err, data) {
+router.get('/api/reviewed/:isbn', function(req, res) {
+    Reviewed.findOne({isbn: req.params.isbn}, function(err, data) {
         if (err) {
             res.json('Error: '+err);
         } else {
@@ -122,12 +122,12 @@ router.get('/api/reviewed/:lccn', function(req, res) {
     })
 });
 
-router.put('/api/reviewed/:lccn', function(req, res) {
-    Reviewed.findOne({lccn: req.params.lccn}, function(err, data) {
+router.put('/api/reviewed/:isbn', function(req, res) {
+    Reviewed.findOne({isbn: req.params.isbn}, function(err, data) {
         if (err) {
             res.json('Error: '+err);
         } else {
-            data.lccn = req.body.lccn;
+            data.isbn = req.body.isbn;
             data.author = req.body.author;
             data.title = req.body.title;
             data.year_published = req.body.year_published;
@@ -149,8 +149,8 @@ router.put('/api/reviewed/:lccn', function(req, res) {
     });
 })
 
-router.delete('/api/reviewed/:lccn', function(req, res) {
-    Reviewed.remove({lccn: req.params.lccn}, function(err) {
+router.delete('/api/reviewed/:isbn', function(req, res) {
+    Reviewed.remove({isbn: req.params.isbn}, function(err) {
         if (err) {
             res.json('Error: '+err);
         } else {

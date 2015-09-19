@@ -2,7 +2,7 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 var ToReadSchema = new Schema({
-    lccn: {unique: true, type: String, required: true}, // This is unique key
+    isbn: {unique: true, type: String}, // This is unique key
     title: String,
     author: String,
     year_published: Date,

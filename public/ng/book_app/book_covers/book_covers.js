@@ -18,6 +18,7 @@ angular.module('bookCovers', [])
         };
 
         dataFactory.postBook = function(book) {
+            console.log(book.toSource());
             return $http.post(urlBase, book);
         };
 
@@ -36,22 +37,22 @@ angular.module('bookCovers', [])
         var dataFactory = {};
 
         dataFactory.getList = function() {
-            return $http.get(urlbase);
+            return $http.get(urlBase);
         };
 
         dataFactory.postBook = function(book) {
-            book.lccn = book.lccn[0];
-            console.log(book.toSource());
-            return $http.post(urlbase, book);
+            return $http.post(urlBase, book);
         };
 
         dataFactory.updateBook = function(book) {
-            return $http.put(urlbase+'/'+book.isbn, book);
+            return $http.put(urlBase+'/'+book.isbn, book);
         };
 
         dataFactory.deleteBook = function(book) {
-            return $http.delete(urlbase+'/'+book.isbn);
+            return $http.delete(urlBase+'/'+book.isbn);
         };
+
+        return dataFactory;
     })
     .directive('bookCoversDirective', function() {
         return {
@@ -142,6 +143,7 @@ angular.module('bookCovers', [])
                     $scope.bookData = data.docs;
                 })
                 .error(function(error) {
+                    console.log(error);
                     $scope.status = 'Unable to load data: ' + error.message;
                 });
         }
@@ -161,11 +163,13 @@ angular.module('bookCovers', [])
             notes: 'Add your notes here!',
         };
 
-        this.post = function() {
-            ToReadApi.postBook(this.addToDb)
+        this.post = function(book) {
+            console.log(book.isbn);
+            ToReadApi.postBook(book)
             .success(function(data){
                 $scope.isVisible = false;
                 $scope.$parent.$parent.bookData = {};
+                console.log(data);
                 alert('Added to Database!');
             })
             .error(function(err){
@@ -175,13 +179,26 @@ angular.module('bookCovers', [])
         }
 
     })
-    .controller('ToReadListController', function($scope, ToReadApi) {
-        $scope.toReadList = null;
+    .controller('ToReadListController', function($scope, ToReadApi, ReviewedApi) {
+        this.toReadList = null;
         $scope.$watch('bookData', function(newValue, oldValue) {
             ToReadApi.getList().success(function(data){
                 $scope.toReadList = data;
+                for (book in $scope.toReadList) {
+                    $scope.toReadList[book].checkboxModel = false;
+                }
             }).error(function(err) {
                 console.log('Error: '+err);
             });
         })
+    })
+    .controller('ReviewedController', function($scope, ReviewedApi) {
+        $scope.reviewedList;
+        $scope.$watch('toReadList', function(newVal, oldVal) {
+            ReviewedApi.getList().success(function(data) {
+                $scope.reviewedList = data;
+            }).error(function(err) {
+                console.log('Error: '+err);
+            });
+        });
     });

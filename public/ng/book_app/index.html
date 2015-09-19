@@ -8,9 +8,35 @@
         <script src="/ng/angular-resource.min.js"></script>
     </head>
     <body>
-
-        <book-covers-directive></book-covers-directive>
-        <script src="/ng/book_app/app.js"></script>
-        <script src="/ng/book_app/book_covers/book_covers.js"></script>
+        <div ng-controller="BookCoversController as ctrl">
+            <form>
+                <fieldset>
+                    <label>
+                        <h1>Add Book To Reading List</h1>
+                        <p>Search by:</p>
+                        <input type="radio" ng-model="ctrl.newSearch.type" value="isbn">ISBN
+                        <input type="radio" ng-model="ctrl.newSearch.type" value="title">Title
+                        <input type="radio" ng-model="ctrl.newSearch.type" value="author">Author
+                        <br>
+                        <input type="text" ng-model="ctrl.newSearch.params">
+                        <br>
+                    </label>
+                    <button ng-click="ctrl.getBooks(ctrl.newSearch)">Search</button>
+                    <button ng-click="ctrl.clearBooks()">Done</button>
+                </fieldset>
+            </form>
+        </div>
+        <div id="preview" class="book-container" ng-repeat="book in bookData">
+            <img ng-src="http://covers.openlibrary.org/b/lccn/{{book.lccn[0]}}-M.jpg?default=false" src-fallback="{{book.lccn}}" src-index="0">
+            <p>{{book.title_suggest | limitTo: 20}}{{book.title_suggest.length > 20 ? '...' : ''}}</p>
+            <p authors>{{book.author_name | limitTo: 20}}{{book.author_name.length > 20 ? '...':''}}</p>
+            <p>{{book.first_publish_year}}</p>
+        </div>
+        <div id="toreadlist" ng-controller="ToReadListController as ctrl">
+            
+        </div>
+        <to-read-list></to-read-list>
+        <reviewed-list></reviewed-list>
+        <script src="/ng/book_app/refactor/root.js"></script>
     </body>
 </html>
