@@ -1,5 +1,9 @@
 angular.module('book_app', ['ngResource','bookCovers']);
 angular.module('bookCovers', [])
+.run(function($rootScope) {
+    $rootScope.bookData = {};
+    $rootScope.selectedBook = {};
+})
 .factory('OpenLibrary', function($http) {
     var urlBase = 'https://openlibrary.org/search.json?';
     var data = {};
@@ -19,7 +23,6 @@ angular.module('bookCovers', [])
     };
 
     dataFactory.postBook = function(book) {
-        console.log(book.toSource());
         return $http.post(urlBase, book);
     };
 
@@ -100,6 +103,7 @@ angular.module('bookCovers', [])
         compile: function(tElem, tAttrs) {
             return {
                 pre: function(scope, elem, attrs) {
+                    scope.book.isbn = scope.book.isbn[0];
                     if (scope.book.author_name.length > 1) {
                         var authors = scope.book.author_name[0];
                         for (i = 1; i < scope.book.author_name.length; i++) {
@@ -115,9 +119,6 @@ angular.module('bookCovers', [])
     }
 })
 .controller('BookCoversController', function($scope, $rootScope, OpenLibrary) {
-
-    $rootScope.bookData;
-
     this.newSearch = {
         type: 'author',
         params: 'stephen king'
@@ -135,10 +136,29 @@ angular.module('bookCovers', [])
                 console.log(error);
                 $scope.status = 'Unable to load data: ' + error.message;
             });
-    }
+    };
 
     this.clearBooks = function() {
         $rootScope.bookData = {};
+    };
+
+    this.selected = function(book) {
+        $rootScope.selectedBook = book;
+    };
+})
+.controller('AddBookController', function($scope, $rootScope, ToReadApi) {
+    this.post = function(book) {
+        console.log(book.isbn);
+        ToReadApi.postBook(book)
+        .success(function(data) {
+            console.log(data);
+            alert('Posted to db!');
+            $rootScope.selectedBook = {};
+            $rootScope.bookData = {};
+        })
+        .error(function(err) {
+            console.log(err);
+        })
     }
 })
 .controller('ToReadListController', function($scope, $rootScope, ToReadApi, ReviewedApi) {
