@@ -151,4 +151,15 @@ angular.module('bookCovers', [])
             console.log(err);
         });
     });
+})
+.controller('ReviewedListController', function($scope, $rootScope, ToReadApi, ReviewedApi) {
+    $rootScope.$watch('toreadlist', function() {
+        ReviewedApi.getList()
+        .success(function(data) {
+            $rootScope.reviewedlist = data;
+        })
+        .error(function(err) {
+            console.log(err);
+        });
+    });
 });

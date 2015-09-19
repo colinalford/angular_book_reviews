@@ -26,17 +26,26 @@
                 </fieldset>
             </form>
         </div>
-        <div id="preview" class="book-container" ng-repeat="book in bookData">
-            <img ng-src="http://covers.openlibrary.org/b/lccn/{{book.lccn[0]}}-M.jpg?default=false" src-fallback="{{book.lccn}}" src-index="0">
-            <p>{{book.title_suggest | limitTo: 20}}{{book.title_suggest.length > 20 ? '...' : ''}}</p>
-            <p authors>{{book.author_name | limitTo: 20}}{{book.author_name.length > 20 ? '...':''}}</p>
-            <p>{{book.first_publish_year}}</p>
+        <div id="preview">
+            <div class="book-container" ng-repeat="book in bookData">
+                <img ng-src="http://covers.openlibrary.org/b/lccn/{{book.lccn[0]}}-M.jpg?default=false" src-fallback="{{book.lccn}}" src-index="0">
+                <p>{{book.title_suggest | limitTo: 20}}{{book.title_suggest.length > 20 ? '...' : ''}}</p>
+                <p authors>{{book.author_name | limitTo: 20}}{{book.author_name.length > 20 ? '...':''}}</p>
+                <p>{{book.first_publish_year}}</p>
+            </div>
+            <span></span>
         </div>
         <div id="toreadlist" ng-controller="ToReadListController as ctrl">
-            
+            <div class="book-container" ng-repeat="book in toreadlist">
+                <p>{{book.title}}</p>
+            </div>
         </div>
-        <to-read-list></to-read-list>
-        <reviewed-list></reviewed-list>
+        <hr>
+        <div id="reviewedlist" ng-controller="ReviewedListController as ctrl">
+            <div class="book-container" ng-repeat="book in reviewedlist">
+                <p>{{book.title}}</p>
+            </div>
+        </div>
         <script src="/ng/book_app/refactor/root.js"></script>
     </body>
 </html>
