@@ -21,12 +21,13 @@ router.get('/api/toread', function(req, res) {
 
 router.post('/api/toread', function(req, res) {
     var toread = new ToRead();
-    toread.isbnn = req.body.isbn;
+    toread.isbn = req.body.isbn;
     toread.title = req.body.title;
     toread.author = req.body.author;
     toread.year_published = req.body.year_published;
     toread.began_date = req.body.began_date;
     toread.notes = req.body.notes;
+    toread.img_url = req.body.img;
 
     toread.save(function(err) {
         if (err) {
@@ -102,6 +103,7 @@ router.post('/api/reviewed', function(req, res) {
     reviewed.notes = req.body.notes;
     reviewed.rating = req.body.rating;
     reviewed.review = req.body.review;
+    reviewed.img_url = req.body.img_url;
 
     reviewed.save(function(err) {
         if (err) {

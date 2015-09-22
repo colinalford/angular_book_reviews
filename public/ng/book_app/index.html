@@ -26,8 +26,8 @@
                 </fieldset>
             </form>
 
-            <div id="preview">
-                <div class="book-container" ng-repeat="book in bookData">
+            <div id="preview" style="overflow: auto; height: 400px" ng-hide="ctrl.bookData">
+                <div class="book-container" ng-repeat="book in bookData track by $index">
                     <img ng-src="http://covers.openlibrary.org/b/lccn/{{book.lccn[0]}}-M.jpg?default=false" src-fallback="{{book.lccn}}" src-index="0" ng-click="ctrl.selected(book)">
                     <p>{{book.title_suggest | limitTo: 20}}{{book.title_suggest.length > 20 ? '...' : ''}}</p>
                     <p authors>{{book.author_name | limitTo: 20}}{{book.author_name.length > 20 ? '...':''}}</p>
@@ -35,9 +35,10 @@
                 </div>
                 <span></span>
             </div>
+
         </div>
 
-        <div id="addBookPreview" ng-controller="AddBookController as ctrl">
+        <div id="addBookPreview" ng-controller="AddBookController as ctrl" ng-show="addBookIsVisible">
             <form>
                 <fieldset>
                     <label>
@@ -53,21 +54,57 @@
                         <br>
                     </label>
                     <button ng-click="ctrl.post(selectedBook)">Add</button>
-                    <button ng-click="isVisible=false">Cancel</button>
+                    <button ng-click="addBookIsVisible=false">Cancel</button>
                 </fieldset>
             </form>
         </div>
+
         <div id="toreadlist" ng-controller="ToReadListController as ctrl">
+            <h1>Books To Read</h1>
             <div class="book-container" ng-repeat="book in toreadlist">
+                <img src="{{book.img_url}}">
                 <p>{{book.title}}</p>
+                <p>{{book.author}}</p>
+                Finished?<input type="checkbox" ng-click="ctrl.revealAddReview(book)" ng-checked="isVisible">
+            </div>
+            <div id="addBookReview" ng-show="isVisible">
+                <form>
+                    <fieldset>
+                        <label>
+                            <h2>What did you think?</h2>
+                            <p>Search by:</p>
+                            Rating:<input type="text" ng-model="rating">{{rating}}
+                            <br>
+                            Review:<input type="text" ng-model="review">{{review}}
+                            <br>
+                            <button ng-click="ctrl.addReview()">Add</button>
+                            <button ng-click="ctrl.cancelReview()">Cancel</button>
+                        </label>
+                    </fieldset>
+                </form>
             </div>
         </div>
+
+
+
         <hr>
+
         <div id="reviewedlist" ng-controller="ReviewedListController as ctrl">
+            <h1>Book Reviews</h1>
             <div class="book-container" ng-repeat="book in reviewedlist">
-                <p>{{book.title}}</p>
+                <div class="book-info">
+                    <img src="{{book.img_url}}">
+                    <p>{{book.title}}</p>
+                    <p>{{book.author}}</p>
+                </div>
+                <div class="review-info">
+                    <p>{{book.rating}}</p>
+                    <p>{{book.review}}</p>
+                </div>
+
             </div>
         </div>
+
         <script src="/ng/book_app/refactor/root.js"></script>
     </body>
 </html>

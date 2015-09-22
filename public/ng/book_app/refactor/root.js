@@ -1,7 +1,7 @@
 angular.module('book_app', ['ngResource','bookCovers']);
 angular.module('bookCovers', [])
 .run(function($rootScope) {
-    $rootScope.bookData = {};
+    $rootScope.bookData = [];
     $rootScope.selectedBook = {};
 })
 .factory('OpenLibrary', function($http) {
@@ -45,6 +45,7 @@ angular.module('bookCovers', [])
     };
 
     dataFactory.postBook = function(book) {
+        console.log(book.rating, book.review);
         return $http.post(urlBase, book);
     };
 
@@ -139,38 +140,104 @@ angular.module('bookCovers', [])
     };
 
     this.clearBooks = function() {
-        $rootScope.bookData = {};
+        $rootScope.bookData = [];
+        $rootScope.addBookIsVisible = false;
     };
 
     this.selected = function(book) {
         $rootScope.selectedBook = book;
+        $rootScope.addBookIsVisible = true;
     };
 })
 .controller('AddBookController', function($scope, $rootScope, ToReadApi) {
+
+    $rootScope.addBookIsVisible = false;
+
     this.post = function(book) {
-        console.log(book.isbn);
-        ToReadApi.postBook(book)
+        var sendBook = {
+            isbn: book.isbn,
+            title: book.title_suggest,
+            author: book.author_name,
+            year_published: book.first_publish_year,
+            notes: book.notes,
+            img: book.img
+        }
+        ToReadApi.postBook(sendBook)
         .success(function(data) {
-            console.log(data);
             alert('Posted to db!');
             $rootScope.selectedBook = {};
-            $rootScope.bookData = {};
+            $rootScope.bookData = [];
+            $rootScope.addBookIsVisible = false;
         })
         .error(function(err) {
             console.log(err);
-        })
+        });
     }
 })
 .controller('ToReadListController', function($scope, $rootScope, ToReadApi, ReviewedApi) {
+
+    this.newReview = {};
+    this.rating = '';
+    this.review = '';
+    this.isVisible = false;
+
     $rootScope.$watch('bookData', function(){
         ToReadApi.getList()
         .success(function(data) {
             $rootScope.toreadlist = data;
+            for (book in $rootScope.toreadlist) {
+                $rootScope.toreadlist[book].checked = false;
+            };
         })
         .error(function(err) {
             console.log(err);
         });
     });
+
+    this.revealAddReview = function(book) {
+        $scope.isVisible = true;
+
+        $scope.newReview = {
+            isbn: book.isbn,
+            author: book.author,
+            title: book.title,
+            year_published: book.year_published,
+            notes: book.notes,
+            img_url: book.img_url,
+            review: '',
+            rating: ''
+        };
+    };
+
+    this.addReview = function() {
+        $scope.newReview.rating = $scope.rating;
+        $scope.newReview.review = $scope.review;
+        ReviewedApi.postBook($scope.newReview)
+        .success(function(data) {
+            ToReadApi.deleteBook($scope.newReview)
+            .success(function(data) {
+                $rootScope.bookData = [];
+                $scope.newReview = {}
+                $scope.isVisible = false;
+            })
+            .error(function(data) {
+                console.log(data);
+            })
+        })
+        .error(function(){
+            console.log(err);
+        });
+    }
+
+    this.cancelReview = function() {
+        $scope.newReview = {};
+        $scope.isVisible = false;
+        $scope.rating = '';
+        $scope.review = '';
+    }
+})
+.controller('AddBookReviewController', function() {
+
 })
 .controller('ReviewedListController', function($scope, $rootScope, ToReadApi, ReviewedApi) {
     $rootScope.$watch('toreadlist', function() {

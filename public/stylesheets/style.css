@@ -10,6 +10,8 @@ a {
 .book-container {
     display: inline-block;
     margin: 1%;
+    overflow: auto;
+    width: 200px;
 }
 
 .book-container img {
