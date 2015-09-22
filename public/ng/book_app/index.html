@@ -3,64 +3,77 @@
     <head>
         <meta charset="utf-8">
         <title>Book App</title>
+        <link href='https://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+        <link href='https://fonts.googleapis.com/css?family=Montserrat' rel='stylesheet' type='text/css'>
         <link rel="stylesheet" href="/stylesheets/style.css">
         <script src="/ng/angular.min.js"></script>
         <script src="/ng/angular-resource.min.js"></script>
     </head>
     <body>
-        <div ng-controller="BookCoversController as ctrl">
+        <div id="title">
+            <div id="headerImage">
+                <img src="assets/book_stack.png" alt="stackofbooks">
+            </div>
+            <div id="headerTitle">
+                <div id="text-container">
+                    <h1>Read:Me</h1>
+                    <h3>A place for your books</h3>
+                </div>
+            </div>
+        </div>
+        <div id="bookSearch" ng-controller="BookCoversController as ctrl">
             <form>
-                <fieldset>
-                    <label>
-                        <h1>Add Book To Reading List</h1>
-                        <p>Search by:</p>
-                        <input type="radio" ng-model="ctrl.newSearch.type" value="isbn">ISBN
-                        <input type="radio" ng-model="ctrl.newSearch.type" value="title">Title
-                        <input type="radio" ng-model="ctrl.newSearch.type" value="author">Author
-                        <br>
-                        <input type="text" ng-model="ctrl.newSearch.params">
-                        <br>
-                    </label>
-                    <button ng-click="ctrl.getBooks(ctrl.newSearch)">Search</button>
-                    <button ng-click="ctrl.clearBooks()">Done</button>
-                </fieldset>
+                <label>
+                    <h2>Add Book To Reading List</h2>
+                    <p>Search by:</p>
+                    <input type="radio" ng-model="ctrl.newSearch.type" value="isbn">ISBN
+                    <input type="radio" ng-model="ctrl.newSearch.type" value="title">Title
+                    <input type="radio" ng-model="ctrl.newSearch.type" value="author">Author
+                    <br>
+                    <input type="text" ng-model="ctrl.newSearch.params">
+                    <br>
+                </label>
+                <button ng-click="ctrl.getBooks(ctrl.newSearch)">Search</button>
+                <button ng-click="ctrl.clearBooks()">Done</button>
             </form>
 
-            <div id="preview" style="overflow: auto; height: 400px" ng-hide="ctrl.bookData">
-                <div class="book-container" ng-repeat="book in bookData track by $index">
-                    <img ng-src="http://covers.openlibrary.org/b/lccn/{{book.lccn[0]}}-M.jpg?default=false" src-fallback="{{book.lccn}}" src-index="0" ng-click="ctrl.selected(book)">
-                    <p>{{book.title_suggest | limitTo: 20}}{{book.title_suggest.length > 20 ? '...' : ''}}</p>
-                    <p authors>{{book.author_name | limitTo: 20}}{{book.author_name.length > 20 ? '...':''}}</p>
-                    <p>{{book.first_publish_year}}</p>
+            <div id="preview-search-container">
+                <div id="preview" ng-show="bookSearchDataIsVisible">
+                    <div class="book-container" ng-repeat="book in bookData track by $index">
+                        <img ng-src="http://covers.openlibrary.org/b/lccn/{{book.lccn[0]}}-M.jpg?default=false" src-fallback="{{book.lccn}}" src-index="0" ng-click="ctrl.selected(book)">
+                        <p>{{book.title_suggest | limitTo: 20}}{{book.title_suggest.length > 20 ? '...' : ''}}</p>
+                        <p authors>{{book.author_name | limitTo: 20}}{{book.author_name.length > 20 ? '...':''}}</p>
+                        <p>{{book.first_publish_year}}</p>
+                    </div>
+                    <span></span>
                 </div>
-                <span></span>
+
+                <div id="addBookPreview" ng-controller="AddBookController as ctrl" ng-show="addBookIsVisible">
+                    <div class="form-container">
+                        <form>
+                            <label>
+                                <h2>Information correct?</h2>
+                                <p>Search by:</p>
+                                Title:<input type="text" ng-model="selectedBook.title_suggest">
+                                <br>
+                                Author:<input type="text" ng-model="selectedBook.author_name">
+                                <br>
+                                Year:<input type="text" ng-model="selectedBook.first_publish_year">
+                                <br>
+                                Notes:<input type="text" ng-model="selectedBook.notes">
+                                <br>
+                            </label>
+                            <button ng-click="ctrl.post(selectedBook)">Add</button>
+                            <button ng-click="ctrl.cancel()">Cancel</button>
+                        </form>
+                    </div>
+                </div>
             </div>
 
         </div>
 
-        <div id="addBookPreview" ng-controller="AddBookController as ctrl" ng-show="addBookIsVisible">
-            <form>
-                <fieldset>
-                    <label>
-                        <h2>Information correct?</h2>
-                        <p>Search by:</p>
-                        Title:<input type="text" ng-model="selectedBook.title_suggest">
-                        <br>
-                        Author:<input type="text" ng-model="selectedBook.author_name">
-                        <br>
-                        Year:<input type="text" ng-model="selectedBook.first_publish_year">
-                        <br>
-                        Notes:<input type="text" ng-model="selectedBook.notes">
-                        <br>
-                    </label>
-                    <button ng-click="ctrl.post(selectedBook)">Add</button>
-                    <button ng-click="addBookIsVisible=false">Cancel</button>
-                </fieldset>
-            </form>
-        </div>
-
         <div id="toreadlist" ng-controller="ToReadListController as ctrl">
-            <h1>Books To Read</h1>
+            <h2>Books To Read</h2>
             <div class="book-container" ng-repeat="book in toreadlist">
                 <img src="{{book.img_url}}">
                 <p>{{book.title}}</p>
@@ -69,28 +82,22 @@
             </div>
             <div id="addBookReview" ng-show="isVisible">
                 <form>
-                    <fieldset>
-                        <label>
-                            <h2>What did you think?</h2>
-                            <p>Search by:</p>
-                            Rating:<input type="text" ng-model="rating">{{rating}}
-                            <br>
-                            Review:<input type="text" ng-model="review">{{review}}
-                            <br>
-                            <button ng-click="ctrl.addReview()">Add</button>
-                            <button ng-click="ctrl.cancelReview()">Cancel</button>
-                        </label>
-                    </fieldset>
+                    <label>
+                        <h2>What did you think?</h2>
+                        <p>Search by:</p>
+                        Rating:<input type="text" ng-model="rating">{{rating}}
+                        <br>
+                        Review:<input type="text" ng-model="review">{{review}}
+                        <br>
+                        <button ng-click="ctrl.addReview()">Add</button>
+                        <button ng-click="ctrl.cancelReview()">Cancel</button>
+                    </label>
                 </form>
             </div>
         </div>
 
-
-
-        <hr>
-
         <div id="reviewedlist" ng-controller="ReviewedListController as ctrl">
-            <h1>Book Reviews</h1>
+            <h2>Book Reviews</h2>
             <div class="book-container" ng-repeat="book in reviewedlist">
                 <div class="book-info">
                     <img src="{{book.img_url}}">

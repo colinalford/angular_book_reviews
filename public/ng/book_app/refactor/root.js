@@ -66,9 +66,9 @@ angular.module('bookCovers', [])
             return {
                 pre: function(scope, element, attributes) {
                     if (attributes.srcFallback === '') {
-                        attributes.$set('src', 'blank_cover.jpg');
+                        attributes.$set('src', 'assets/book_stack.png');
                     }
-                    if (attributes.src === 'blank_cover.jpg') {
+                    if (attributes.src === 'assets/book_stack.png') {
                         var prev = element.parent().parent();
                         var container = element.parent();
                         prev.append(container);
@@ -84,7 +84,7 @@ angular.module('bookCovers', [])
                         var arr = JSON.parse(attributes.srcFallback);
                         var index = JSON.parse(attributes.srcIndex);
                         if (index > arr.length) {
-                            attributes.$set('src', 'blank_cover.jpg');
+                            attributes.$set('src', 'assets/book_stack.png');
                             var prev = element.parent().parent();
                             var container = element.parent();
                             prev.append(container);
@@ -120,6 +120,8 @@ angular.module('bookCovers', [])
     }
 })
 .controller('BookCoversController', function($scope, $rootScope, OpenLibrary) {
+    $rootScope.bookSearchDataIsVisible = false;
+
     this.newSearch = {
         type: 'author',
         params: 'stephen king'
@@ -132,6 +134,8 @@ angular.module('bookCovers', [])
         OpenLibrary.searchBooks(type, params)
             .success(function(data) {
                 $rootScope.bookData = data.docs;
+                $rootScope.bookSearchDataIsVisible = true;
+
             })
             .error(function(error) {
                 console.log(error);
@@ -141,7 +145,10 @@ angular.module('bookCovers', [])
 
     this.clearBooks = function() {
         $rootScope.bookData = [];
+        $rootScope.bookSearchDataIsVisible = false;
         $rootScope.addBookIsVisible = false;
+        $rootScope.selectedBook = null;
+
     };
 
     this.selected = function(book) {
@@ -152,6 +159,12 @@ angular.module('bookCovers', [])
 .controller('AddBookController', function($scope, $rootScope, ToReadApi) {
 
     $rootScope.addBookIsVisible = false;
+
+    $rootScope.$watch('selectedBook', function() {
+        if ($rootScope.selectedBook === {}) {
+            $rootScope.addBookIsVisible = true;
+        }
+    });
 
     this.post = function(book) {
         var sendBook = {
@@ -167,12 +180,18 @@ angular.module('bookCovers', [])
             alert('Posted to db!');
             $rootScope.selectedBook = {};
             $rootScope.bookData = [];
+            $rootScope.bookSearchDataIsVisible = false;
             $rootScope.addBookIsVisible = false;
         })
         .error(function(err) {
             console.log(err);
         });
-    }
+    };
+
+    this.cancel = function() {
+        $rootScope.addBookIsVisible = false;
+        $rootScope.selectedBook = {};
+    };
 })
 .controller('ToReadListController', function($scope, $rootScope, ToReadApi, ReviewedApi) {
 
