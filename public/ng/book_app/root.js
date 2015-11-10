@@ -255,6 +255,9 @@ angular.module('bookCovers', [])
         $scope.review = '';
     }
 })
+.controller('AddBookReviewController', function() {
+
+})
 .controller('ReviewedListController', function($scope, $rootScope, ToReadApi, ReviewedApi) {
     $rootScope.$watch('toreadlist', function() {
         ReviewedApi.getList()

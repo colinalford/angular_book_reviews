@@ -67,14 +67,12 @@ angular.module('bookSearch', [])
 
 
         /*this.fetch = function() {
-
             preview.innerHTML = '';
             var gif = new Image();
             gif.src = 'assets/ajax-loader.gif';
             preview.appendChild(gif);
             var type = this.newSearch.type;
             var params = this.newSearch.params;
-
             $http.get('https://openlibrary.org/search.json?'+type+'='+params, {headers: {'Content-Type': 'application/json'}})
             .success(function(response) {
                 var span = document.createElement('span');
@@ -98,11 +96,8 @@ angular.module('bookSearch', [])
                     }
                 }
                 for (i in bookInfo) {
-
                     var obj = bookInfo[i];
-
                     function addImage(index, obj) {
-
                         var container = document.createElement('div');
                         container.className = 'cover-preview';
                         container.setAttribute('ng-click', 'controller.addBookInfo()');
@@ -111,9 +106,7 @@ angular.module('bookSearch', [])
                         } else {
                             preview.insertBefore(container, span);
                         }
-
                         var img = new Image(190, 280);
-
                         img.onload = function() {
                             var title = document.createElement('p');
                             title.className = 'title';
@@ -122,7 +115,6 @@ angular.module('bookSearch', [])
                             } else {
                                 title.innerHTML = obj['title'];
                             }
-
                             var author = document.createElement('p');
                             author.className = 'author';
                             if (obj['title'].length > 20) {
@@ -131,22 +123,18 @@ angular.module('bookSearch', [])
                                 author.innerHTML = obj['author'];
                             }
                             author.innerHTML = obj['author'];
-
                             this.parentNode.appendChild(title);
                             this.parentNode.appendChild(author);
                         }
-
                         img.onerror = function() {
                             this.parentNode.parentNode.removeChild(this.parentNode);
                             addImage(index+1, obj);
                         }
-
                         if (index >= obj['lccn'].length) {
                             img.src = 'assets/blank_cover.jpg';
                         } else {
                             img.src = "http://covers.openlibrary.org/b/lccn/"+obj['lccn'][index]+"-M.jpg?default=false";
                         }
-
                         container.appendChild(img);
                     }
                     addImage(0, obj);
